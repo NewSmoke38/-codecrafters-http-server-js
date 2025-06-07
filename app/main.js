@@ -1,32 +1,27 @@
-const net = require("net");       // loads Node.js’s built-in net module, lets us create raw TCP servers
+const net = require("net"); // ✅ CommonJS — safe
+console.log("Logs from your program will appear here!");var N = net.createServer((l) => {
+  l.on("data", (b) => {
+    const f = b.toString().split("\r\n"),
+      [j, i, q] = f[0].split(" ");
+    console.log({ method: j, path: i, version: q });
 
-// You can use print statements as follows for debugging, they'll be visible when running tests.
-console.log("Logs from your program will appear here!");
-
-// Uncomment this to pass the first stage
- const server = net.createServer((socket) => {   // now we create a TCP server from this line
-socket.on("data", (data) => {          // incoming http req
-    const request = data.toString();    // req converted from binary to string for readablity
-    const lines = request.split("\r\n");  // splits the request into lines using CRLF (the \r\n thingy) 
-    const requestLine = lines[0];          // gets the very first line of code
-    const [method, path] = requestLine.split(" ");     // splits parts of the req into seperat chunks, strings
-
-    let response;
-    if (path === "/") {
-      response =
-        "HTTP/1.1 200 OK\r\n\r\n<html><body><h1>Hello World</h1></body></html>";
-    } else {
-      response = "HTTP/1.1 404 Not Found\r\n\r\n";
+    let w = "HTTP/1.1 404 Not Found\r\n\r\n";
+    switch (i) {
+      case "/":
+        w =
+          "HTTP/1.1 200 OK\r\n\r\n<html><body><h1>Hello World</h1></body></html>";
+        break;
     }
 
-    socket.write(response);   // sends res back to client, peace ah
-    socket.end();
+    l.write(w);
+    l.end();
+    console.log("messaged");
   });
 
-  socket.on("close", () => {    // makes sure the socket is closed if not already, we gotta be extra sure
-    socket.end();
-   });
- });
+  l.on("close", () => {
+    l.end();
+    // N.close(); <-- REMOVE this
+  });
+});
 
- server.listen(4221, "localhost");
- console.log("Server is listening on port 4221");
+N.listen(4221, "localhost");
